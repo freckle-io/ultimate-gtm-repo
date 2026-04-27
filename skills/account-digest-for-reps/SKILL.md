@@ -57,6 +57,22 @@ Before extraction:
 - When multiple reps are in scope, partition accounts by normalized owner/rep and render one digest payload per rep or segment. Do not blend multiple reps' accounts into a single rep-addressed Slack message unless the user explicitly asks for a manager/team summary.
 - For team-level RevOps review, provide an aggregate preview in the agent/user channel, then gate any per-rep Slack posting behind explicit destination approval.
 
+## Signal Strategy And RevOps Preference Intake
+
+Before signal extraction, ask the RevOps user what signals are most useful for the rep or team receiving the digest. Do not hard-code a named user, rep, company, or team in the skill. Extract the preference for the current run and record it in the run metadata.
+
+If the user does not provide a custom preference, ground signal selection in common GTM-useful patterns:
+
+- hiring in a relevant function such as revenue operations, sales operations, marketing operations, growth, partnerships, business development, customer success, support, sales engineering, data, analytics, CRM, Salesforce, HubSpot, or business operations
+- hiring for a specific role inside a relevant team, especially when the team name makes the GTM or operations context clear
+- new funding or expansion capital that plausibly changes GTM priorities
+- new product launch, market launch, regional expansion, partner program, or pricing/packaging change
+- buyer-authored product, web, form, reply, or intent signals when provided by approved internal or external sources
+
+Ask for any account-quality constraints the RevOps user wants applied before rendering, such as excluding named companies, known bad deals, parent-company false matches, very large/global enterprises, competitors, customers, or accounts outside the current segment.
+
+When using Sumble or any other signal provider, prefer account-specific, recent, high-context signals over raw volume. Broad hiring at a large parent company is not enough on its own. Suppress or de-prioritize large/public-company hiring unless the role or team is tightly tied to the selected GTM pattern and the CRM account identity is not a parent-domain mismatch.
+
 ## Data Model
 
 Resolve every account into this portable account shape:
@@ -243,6 +259,8 @@ Do not include a signal merely because a connector or CRM field returned data. A
 - supports a concrete suggested action, and
 - is not just generic firmographic/static context.
 
+Default Slack surfacing is capped at the top 10 accounts per rep or segment unless the user explicitly asks for more. If more than 10 accounts have qualifying signals, rank them by relevance to the current run's RevOps signal preference, recency, specificity, confidence, and actionability. Prefer fewer sharp signals over a long list. When there are fewer than 10 genuinely relevant recent signals, render only those accounts rather than padding the digest.
+
 Dated signals inside the approved signal window pass the timing bar. Undated signals should pass only when they represent durable product/commercial context, such as active usage or plan data.
 
 Weak examples to suppress by default:
@@ -251,6 +269,8 @@ Weak examples to suppress by default:
 - one anonymous website session with no recent date or contact context,
 - raw employee count, industry, or location,
 - generic technology lists without a sales reason,
+- broad hiring volume at very large companies without a relevant function, team, or account-specific GTM angle,
+- parent-company or domain-mismatch hiring where the CRM account is a subsidiary, product line, or unrelated domain,
 - rep-authored CRM activity timestamps (e.g. `notes_last_updated`, `hs_lastmodifieddate`) on their own — these reflect the rep's own work, not buyer intent. Surface them only when paired with a buyer-authored event (form fill, product usage, reply, web visit by a known contact) or an external trigger.
 
 Distinguish buyer-authored signals (form fills, product events, replies, identified web visits, public triggers from Exa/Sumble) from rep-authored CRM activity (logged notes, calls, tasks). A digest of rep-authored activity tells the rep what they already did; the goal is to tell them what the buyer or market just did.
@@ -298,7 +318,9 @@ Blocked records, missing domains, and `RevOps review needed` items do **not** be
 Rules:
 
 - Strip query strings and UTM parameters from CRM record links.
+- Put the CRM record link on the account line, immediately after the account name, using Slack link syntax. Example: `🏢 *Account:* Atlassian (<https://app.hubspot.com/...|CRM Deal Here>)`. Use a CRM-neutral label such as `CRM Record` when the source is not a deal.
 - Link sources with Slack syntax: `<url|source title>`.
+- Source labels must include the provider that found the signal in the link text or adjacent source text, e.g. `<https://sumble.com/l/job/...|Senior Principal Analyst, Sales Strategy & Operations (found with Sumble)>`.
 - Use the connector's actual formatting mode. Default to the bundled raw Slack `mrkdwn` templates with labels such as `*Account:*`, `*Signal:*`, `*Source:*`, `*Date:*`, and `*Suggested action:*`. Only use double-asterisk labels when the connector explicitly exposes a Markdown/`markdown_text` field and QA confirms it works.
 - Render divider lines as inline code (`` `-----` ``) because bare hyphen-only lines can be interpreted as unsupported horizontal-rule blocks.
 - Use the template's generous spacing: leave a blank line between header rows, before/after dividers, and between each signal field inside account blocks.
