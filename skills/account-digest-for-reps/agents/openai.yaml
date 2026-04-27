@@ -1,0 +1,7 @@
+interface:
+  display_name: "Account Digest For Reps"
+  short_description: "Build Slack-ready account digests"
+  default_prompt: "Use $account-digest-for-reps to build a Slack-ready account digest from a CRM list, CRM search, Salesforce report, or CSV."
+
+policy:
+  allow_implicit_invocation: true
