@@ -1,7 +1,7 @@
 interface:
   display_name: "Account Digest For Reps"
-  short_description: "Build Slack-ready account digests"
-  default_prompt: "Use $account-digest-for-reps to build a Slack-ready account digest from a CRM list, CRM search, Salesforce report, or CSV."
+  short_description: "Rank account signals into Slack digests"
+  default_prompt: "Use $account-digest-for-reps to turn a CRM list, Salesforce report, HubSpot custom signal source, product/session activity, or CSV into a ranked Slack account digest."
 
 policy:
   allow_implicit_invocation: true

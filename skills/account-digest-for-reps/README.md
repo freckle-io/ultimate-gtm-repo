@@ -6,10 +6,15 @@ The skill is connector-first and repo-agnostic. It does not depend on Freckle-sp
 
 ## Contents
 
-- `SKILL.md` - the full skill definition and operating contract.
+- `SKILL.md` - the compact operating guide and reference router.
 - `templates/slack_digest.md` - top-level Slack digest template.
 - `templates/slack_account_block.md` - per-account Slack block template.
 - `templates/slack_digest_zero_surface.md` - zero-surfaced-account template.
+- `references/providers.md` - provider discovery and provider-to-signal mapping.
+- `references/signal-groups.md` - signal groups, scoring, and suppression rules.
+- `references/extraction.md` - normalized `signals.csv` extraction schema.
+- `references/hubspot.md` - HubSpot custom events, custom objects, and writeback notes.
+- `references/slack-output.md` - Slack formatting rules and full example output.
 - `agents/openai.yaml` - optional UI metadata for skill lists and default invocation.
 
 ## What It Does
